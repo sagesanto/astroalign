@@ -253,8 +253,12 @@ class _MatchTransform:
 def _data(image):
     """Return the bare 2D numpy array with pixel information."""
     if hasattr(image, "data") and isinstance(image.data, _np.ndarray):
-        return image.data
-    return _np.asarray(image)
+        arr = image.data
+    else:
+        arr = _np.asarray(image)
+    if arr.dtype.byteorder not in ("=", "|"):
+        arr = arr.byteswap().view(arr.dtype.newbyteorder("="))
+    return arr
 
 
 def _mask(image):
@@ -569,25 +573,13 @@ def _find_sources(img, detection_sigma=5, min_area=5, mask=None):
     _, bkg_med, bkg_std = sigma_clipped_stats(img,mask=mask,sigma=3)
     thresh = detection_sigma * bkg_std
     segm = detect_sources(image-bkg_med,thresh,npixels=min_area)
+    if segm is None:
+        raise ValueError("No sources found in image.")
     segm_deblend = deblend_sources(img, segm, npixels=min_area, nlevels=16, contrast=0.001)
     cat = SourceCatalog(image, segm_deblend)
     table = cat.to_table(columns=cat.default_columns)
     table.sort(['kron_flux'], reverse = True)
     return _np.array([[row["xcentroid"],row["ycentroid"]] for row in table])
-
-# def _find_sources(img, detection_sigma=5, min_area=5, mask=None):
-#     """Return sources (x, y) sorted by brightness."""
-#     import sep
-
-#     image = img.astype("float32")
-#     bkg = sep.Background(image, mask=mask)
-#     thresh = detection_sigma * bkg.globalrms
-#     sources = sep.extract(
-#         image - bkg.back(), thresh, minarea=min_area, mask=mask
-#     )
-#     sources.sort(order="flux")
-#     return _np.array([[asrc["x"], asrc["y"]] for asrc in sources[::-1]])
-
 
 # Copyright (c) 2004-2007, Andrew D. Straw. All rights reserved.
 

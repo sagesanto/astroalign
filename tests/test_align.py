@@ -743,20 +743,14 @@ class TestColorImages(unittest.TestCase):
         _, bkg_med, bkg_std = sigma_clipped_stats(full_algn,sigma=3)
         thresh = 5 * bkg_std
         segm = detect_sources(full_algn-bkg_med,thresh,npixels=5)
-        import matplotlib.pyplot as plt
-        plt.imshow(full_algn)
-        plt.show()
+        if segm is None:
+            return 0
         segm_deblend = deblend_sources(full_algn, segm, npixels=5, nlevels=16, contrast=0.001)
         cat = SourceCatalog(full_algn, segm_deblend)
         table = cat.to_table(columns=cat.default_columns)
         table.sort(['kron_flux'], reverse = True)
         table = cat.to_table(columns=cat.default_columns)
-        
-        # import sep
 
-        # bkg = sep.Background(full_algn)
-        # thresh = 5.0 * bkg.globalrms
-        # allobjs = sep.extract(full_algn - bkg.back(), thresh)
         allxy = np.array([[obj["xcentroid"], obj["ycentroid"]] for obj in table])
 
         from scipy.spatial import KDTree

@@ -575,7 +575,7 @@ def _find_sources(img, detection_sigma=5, min_area=5, mask=None):
     segm = detect_sources(image-bkg_med,thresh,npixels=min_area)
     if segm is None:
         raise ValueError("No sources found in image.")
-    segm_deblend = deblend_sources(img, segm, npixels=min_area, nlevels=16, contrast=0.001)
+    segm_deblend = deblend_sources(img, segm, npixels=min_area, nlevels=16, contrast=0.001, progress_bar=False)
     cat = SourceCatalog(image, segm_deblend)
     table = cat.to_table(columns=cat.default_columns)
     table.sort(['kron_flux'], reverse = True)

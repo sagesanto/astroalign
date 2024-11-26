@@ -1,6 +1,6 @@
 **ASTROALIGN** is a python module that will try to align two stellar astronomical images, especially when there is no WCS information available.
 
-This is a hasty port of astroalign to use photutils instead of sep for source extraction (sep is not compatible with recent versions of numpy). Original repo: [https://github.com/quatrope/astroalign/tree/master](https://github.com/quatrope/astroalign/tree/master).
+**This is a hasty port of astroalign** to use photutils instead of sep for source extraction (sep is not compatible with recent versions of numpy). Original repo: [https://github.com/quatrope/astroalign/tree/master](https://github.com/quatrope/astroalign/tree/master).
 
 # Citation
 
